@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   postgres:
     image: postgres:16
@@ -10,13 +12,7 @@ services:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./db/postgres:/migrations   # tu siedzi schema.sql
-      - ./data:/data                # tu będą dumpy IMDb
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U imdb -d imdb || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - ./data:/data
 
   mysql:
     image: mysql:8.4
@@ -26,35 +22,51 @@ services:
       MYSQL_DATABASE: imdb
       MYSQL_USER: imdb
       MYSQL_PASSWORD: imdb
-    command:
-      - "--local-infile=ON"
+    command: ["--local-infile=ON"]
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./data:/data
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "imdb", "-pimdb"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
-  mongo:
+  mariadb:
+    image: mariadb:latest
+    container_name: imdb-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: imdb
+      MYSQL_USER: imdb
+      MYSQL_PASSWORD: imdb
+    command: ["--local-infile=1"]
+    ports:
+      - "3308:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./data:/data
+
+  mongo-8:
     image: mongo:8.0
-    container_name: imdb-mongo
+    container_name: imdb-mongo-8
     environment:
       MONGO_INITDB_ROOT_USERNAME: imdb
       MONGO_INITDB_ROOT_PASSWORD: imdb
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
-      - mongo_data:/data/db
+      - mongo_data_8:/data/db
       - ./data:/data
-    healthcheck:
-      test: ["CMD-SHELL", "mongosh --username imdb --password imdb --eval 'db.adminCommand(\"ping\")' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+
+  mongo-7:
+    image: mongo:7.0.0
+    container_name: imdb-mongo-7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: imdb
+      MONGO_INITDB_ROOT_PASSWORD: imdb
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo_data_7:/data/db
+      - ./data:/data
 
   cassandra:
     image: cassandra:5
@@ -78,5 +90,7 @@ services:
 volumes:
   pg_data:
   mysql_data:
-  mongo_data:
+  mariadb_data:
+  mongo_data_7:
+  mongo_data_8:
   cassandra_data:
