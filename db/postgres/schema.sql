@@ -124,22 +124,22 @@ CREATE TABLE title_genres (
 -- Indeksy pod typowe zapytania (wydajność CRUD / READ)
 ------------------------------------------------------------
 
--- Szukanie tytułów po typie i roku
-CREATE INDEX idx_titles_type_year
-    ON titles (title_type, start_year);
+-- -- Szukanie tytułów po typie i roku
+-- CREATE INDEX idx_titles_type_year
+--     ON titles (title_type, start_year);
 
--- Popularne tytuły po liczbie głosów
-CREATE INDEX idx_ratings_num_votes
-    ON ratings (num_votes DESC);
+-- -- Popularne tytuły po liczbie głosów
+-- CREATE INDEX idx_ratings_num_votes
+--     ON ratings (num_votes DESC);
 
--- Filmografia osoby
-CREATE INDEX idx_principals_person
-    ON principals (person_id);
+-- -- Filmografia osoby
+-- CREATE INDEX idx_principals_person
+--     ON principals (person_id);
 
--- Odcinki danego serialu w kolejności sezon/odcinek
-CREATE INDEX idx_episodes_parent_season_episode
-    ON episodes (parent_id, season_number, episode_number);
+-- -- Odcinki danego serialu w kolejności sezon/odcinek
+-- CREATE INDEX idx_episodes_parent_season_episode
+--     ON episodes (parent_id, season_number, episode_number);
 
--- Tytuły po gatunku
-CREATE INDEX idx_title_genres_genre
-    ON title_genres (genre);
+-- -- Tytuły po gatunku
+-- CREATE INDEX idx_title_genres_genre
+--     ON title_genres (genre);
